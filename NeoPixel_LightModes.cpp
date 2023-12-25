@@ -8,11 +8,16 @@ NeoLM::NeoLM(int LED_COUNT, int LED_PIN){
     led_pin = LED_PIN;
     periodic_state = 0.0;
     pulse_state = 0.0;
-    periocic_speed = 100;
+    periodic_speed = 100;
     brightness = 100;
-    colors = {0,0,0,0,0,0}
+    colors[0][0] = 0;
+    colors[0][1] = 0;
+    colors[0][2] = 0;
+    colors[1][0] = 0;
+    colors[1][1] = 0;
+    colors[1][2] = 0;
     led_mode = OFF;
-    strip = new Adafruit_NeoPixel(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
+    strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 }
 
 void NeoLM::setMode(LEDMode NEW_MODE){
@@ -31,8 +36,13 @@ void NeoLM::setColor2(byte RED, byte GREEN, byte BLUE){
     colors[1][2] = BLUE;
 }
 
-void NeoLM::setColors(byte[2][3] newColors){
-    colors = newColors;
+void NeoLM::setColors(byte newColors[2][3]){
+    colors[0][0] = newColors[0][0];
+    colors[0][1] = newColors[0][1];
+    colors[0][2] = newColors[0][2];
+    colors[1][0] = newColors[1][0];
+    colors[1][1] = newColors[1][1];
+    colors[1][2] = newColors[1][2];
 }
 
 void NeoLM::setSpeed(int SPEED){
@@ -42,6 +52,24 @@ void NeoLM::setSpeed(int SPEED){
 void NeoLM::setBrightness(int BRIGHTNESS){
     brightness = BRIGHTNESS;
 }
+
+void NeoLM::setData(LEDData data){
+    led_mode = data.led_mode;
+
+    colors[0][0] = data.colors[0][0];
+    colors[0][1] = data.colors[0][1];
+    colors[0][2] = data.colors[0][2];
+
+    colors[1][0] = data.colors[1][0];
+    colors[1][1] = data.colors[1][1];
+    colors[1][2] = data.colors[1][2];
+
+    periodic_speed = data.periodic_speed;
+
+    brightness = data.brightness;
+}
+
+
 
 void NeoLM::updateState(){
     if (periodic_state < led_count / 2){
@@ -65,7 +93,7 @@ void NeoLM::synchronize(){
 }
 
 void NeoLM::lightUp(){
-    switch(mode){
+    switch(led_mode){
         case OFF:{
             strip.clear();
             strip.show();
